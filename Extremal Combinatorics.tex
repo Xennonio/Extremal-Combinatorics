@@ -1,0 +1,779 @@
+\documentclass[11pt]{article}
+
+%% Packages
+\usepackage{amsmath, amsthm, amsfonts, amssymb, amscd}
+\usepackage{thmtools}
+\usepackage{mathrsfs}
+\usepackage{cancel}
+\usepackage[margin=3cm]{geometry}
+\usepackage{empheq}
+\usepackage{framed}
+\usepackage[most]{tcolorbox}
+\usepackage{proof}
+\usepackage{tikz}
+\usetikzlibrary{trees}
+\usepackage{graphicx}
+
+%% Figures Packages
+
+%% Pagestyle
+\newlength{\tabcont}
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{0.05in}
+\colorlet{shadecolor}{orange!15}
+\parindent 0in
+\geometry{margin=1in, headsep=0.25in}
+\newtheorem{note}{Nota}
+
+%% NewCommands
+\newcommand{\mc}[1]{\mathcal{#1}}
+\newcommand{\mf}[1]{\mathfrak{#1}}
+\newcommand{\msf}[1]{\mathsf{#1}}
+\newcommand{\mbb}[1]{\mathbb{#1}}
+\newcommand{\ol}[1]{\overline{#1}}
+\newcommand{\im}[1]{\text{\normalfont Im}(#1)}
+\newcommand{\subs}[2]{\setcounter{subsection}{#1 - 1}\subsection{#2}}
+\newcommand\overtext[2]
+{\stackrel{\mathclap{\normalfont\mbox{#1}}}{#2}}
+\renewcommand\qedsymbol{$\dashv$}
+\newcommand{\bigslant}[2]{{\raisebox{.2em}{$#1$}\left/\raisebox{-.2em}{$#2$}\right.}}
+\newcommand{\rp}[1]{{\left(#1\right)}}
+\newcommand{\db}[1]{{[\![#1]\!]}}
+\newcommand\restr[2]{{\left.\kern-\nulldelimiterspace#1\vphantom{\big|}\right|_{#2}}}
+\newcommand\floor[1]{{\left\lfloor#1\right\rfloor}}
+\newcommand\ceil[1]{{\left\lceil#1\right\rceil}}
+\renewcommand*{\proofname}{Prova}
+\renewcommand\refname{Referências Bibliográficas}
+\newcommand{\cl}[1]{\colorlet{shadecolor}{#1}}
+\DeclareMathOperator{\sen}{sen}
+\newcommand{\dd}{\mathrm{d}}
+\renewcommand{\figurename}{Fig.}
+\renewcommand{\ln}[1]{{\mathop{\ell n\rp{#1}}}}
+\renewcommand{\contentsname}{Sumário}
+
+%% Theorems, definitions, corollaries and lemmas
+\declaretheoremstyle[bodyfont=\normalfont]{normalbody}
+\declaretheorem[numberwithin=section, style=normalbody, name=Teorema]{theorem}
+\declaretheorem[numberwithin=section, style=normalbody, name=Definição]{definition}
+\declaretheorem[numberwithin=section, style=normalbody, name=Corolário]{corollary}
+\declaretheorem[numberwithin=section, style=normalbody, name=Lema]{lemma}
+\declaretheorem[numbered = no, style=normalbody, name=Solução]{solution}
+\declaretheorem[numberwithin=subsection, style=normalbody, name=Exercício]{exercise}
+
+%% Document
+
+\begin{document}
+\thispagestyle{empty}
+
+\begin{center}
+{\LARGE \bf Combinatória Extremal}\\
+{\large Ref. Tópicos em Combinatória Contemporânea - Gugu, Yoshi}
+
+\vspace{0.7cm}
+\textbf{Autor: Xenônio}\\
+Discord: xennonio
+\end{center}
+
+\tableofcontents
+
+\section{Introdução}
+
+\subsection{Motivação}
+
+\subsubsection{Anticadeias sob Divisão (Sequências Primitivas)}
+
+Dado $\ol{2n}:=\{1, 2, \dots, 2n\}$, é fácil ver que há $x,y\in\ol{2n}$ tal que $\gcd(x,y)=1$, basta considerar a partição
+$$A=\{\{1,2\},\{3,4\},\dots,\{2n-1,2n\}\}$$
+de $\ol{2n}$ com $|A|=n$. Isso garante que, escolhendo $n+1$ elementos, pelo princípio da casa dos pombos no mínimo dois estarão na mesma classe, i.e., serão consectuvos logo seu mdc será $1$.
+
+Analogamente, podemos perguntar, qual o maior subconjunto de $\ol{2n}$ que não possui $x,y$ tal que $x\mid y$, i.e., qual a maior cardinalidade de uma anticadeia de $\ol{2n}$ sob divisibilidade (também conhecida como sequência primitiva).
+
+Como todo número em $\ol{2n}$ pode ser secrito como
+$$\ol{2n}=\{1,2,3,2^2,5,2\cdot3,7,2^3,3^2,\dots,2^ma\}$$
+retirando os fatores de $2$ teremos
+$$A=\{1, 1, 3, 1, 5, 3, 7, 1, 3^2,\dots,a\}$$
+como há $n$ ímpares em $2n$, $|A|=n$, escolhendo $n+1$ inteiros, no mínimo $2$ serão tal que $x=2^rk$, $y=2^sk$, i.e., $x\mid y$ ou $y\mid x$.
+
+Como $B=\{n+1,\dots,2n\}$ é tal que $|B|=n$ e $B$ é uma anticadeia, então $n$ é o maior número de elementos de $\ol{2n}$ que não tem elementos tal que um divide o outro.
+
+Em geral, combinatória extremal trabalha com questões do tipo: Dada uma determinada propriedade $\varphi(x)\in\mc{L}_1$, qual a maior (ou menor) cardinalidade possível para o conjunto $A$ tal que $\varphi(A)$. Tal número, se existir, será denotado por $c(\varphi)$.
+
+\subsubsection{Sistemas Intersectantes}
+
+Como uma motivação adicional e, utilizando a notação mencionada anteriormente. Seja $\varphi_n(x):=$"$\mathscr{A}\subseteq\mc{P}(\ol{n})$ e, para todo $A,B\in\mathscr{A}$, $A\cap B\neq\emptyset$. Provaremos que:
+
+\cl{orange!15}
+\begin{shaded}
+\begin{theorem}
+    Se $\mathscr{A}$ é tal que $\varphi_n(\mathscr{A})$ e $|\mathscr{A}|<2^{n-1}$, então ele pode ser estendido para uma coleção $\mathscr{A}'$ com $2^{n-1}$ elementos tal que $|\mathscr{A}'|=2^{n-1}$, ou seja
+    $$c(\varphi_n)=2^{n-1}$$
+\end{theorem}
+\end{shaded}
+
+\begin{proof}
+    Se $A\subseteq\mathscr{A}$, então $\ol{n}\setminus A\notin\mathscr{A}$, visto que $A\cap(\ol{n}\setminus A)=\emptyset$. Portanto
+    $$|\mathscr{A}|\leq\frac12|\mc{P}(\ol{n})|=\frac12\cdot2^n=2^{n-1}$$
+    De fato, tal limitante não pode ser melhora, visto que
+    $$\mathscr{A}:=\{x\in\mc{P}(\ol{n}):1\in x\}$$
+    é tal que $\varphi_n(\mathscr{A})$ e $\mathscr{A}=2^{n-1}$.
+
+    Agora, se $|\mathscr{A}|<2^{n-1}$, com $\varphi_n(\mathscr{A})$, então existe $X\in\mc{P}(\ol{n})$ tal que $X\notin\mathscr{A}$ e $\ol{n}\setminus X\notin\mathscr{A}$. Se adicionarmos $X$ em $\mathscr{A}$ e não houver $Y\in\mathscr{A}$ tal que $X\cap Y=\emptyset$, então estamos feitos, caso contrário, $X\cap Y=\emptyset$, logo $Y\subseteq\ol{n}\setminus X$, i.e., podemos adicionar $\ol{n}\setminus X$ em $\mathscr{A}$, visto que, para todo $A\in\mathscr{A}$, temos $A\cap Y\neq\emptyset$ e $A\cap(\ol{n}\setminus X)\neq\emptyset$, então eventualmente $\mathscr{A}$ será extendido para um conjunto de $2^{n-1}$ elementos.
+\end{proof}
+
+\section{Teorema de Sperner}
+
+\subsection{Estimativas Iniciais}
+
+Dado $\mathscr{A}\subseteq\mc{P}(\ol{n})$, uma anticadeia sob $\subseteq$, um problema interessante é, sendo $\psi_n(x):=$"$x\subseteq\mc{P}(\ol{n})$ é uma anticadeia", determinar $c(\psi_n(x))$.
+
+Note que $[\ol{n}]^k$ é uma anticadeia de $\mc{P}(\ol{n})$, portanto, para $0\leq k\leq n$
+$$c(\psi_n)\geq\binom{n}{k}$$
+Que é máximo em $k=\ceil{\frac{n}{2}}$, pelo seguinte lema.
+
+\cl{blue!15}
+\begin{shaded}
+\begin{lemma}
+\label{binommax}
+    Se $f(k)=\binom{n}{k}$, com $n\in\mbb{N}$ fixo, então
+    $$\max_{0\leq k\leq n}f(k)=f\left(\ceil{\frac{n}{2}}\right)$$
+\end{lemma}
+\end{shaded}
+
+\begin{proof}
+    Provaremos que $f$ é estritamente crescente para $0\leq k<\ceil{\frac{n}{2}}$, visto que, como $f(k) = f(n - k)$, então ela é estritamente decrescente após $\ceil{\frac{n}{2}}$, logo em $k = \ceil{\frac{k}{2}}$ temos um ponto de máximo.
+
+    Para isso, note que
+    \begin{align*}
+        \binom{n}{k} & = \frac{n!}{k!(n - k)!}\\
+        & = \frac{n!}{(k-1)!(n-k+1)!}\cdot\frac{n-k+1}{k}\\
+        & = \binom{n}{k-1}\frac{n-k+1}{k}
+    \end{align*}
+    Logo $f(k)>f(k-1)$ sse $n-k+1>k$, i.e., $k<\frac{n+1}{2}$. Se $n=2m$, $k=m$ é máximo e, se $n=2m+1$, $k+1=m+1$, ou seja, $k=\ceil{\frac{n}{2}}$.
+\end{proof}
+
+\subsection{Prova de Lubell e Desigualdade de LYM}
+
+Dada essa estimativa de $c(\psi_n)$, o que o Teorema a seguir nos diz é que esta é, na verdade, a melhor possível:
+
+\cl{orange!15}
+\begin{shaded}
+\begin{theorem}\textbf{(Sperner)}
+\label{sperner}
+    $$c(\psi_n)=\binom{n}{\ceil{\frac{n}{2}}}$$
+\end{theorem}
+\end{shaded}
+
+\cl{purple!15}
+\begin{shaded}
+\textbf{Obs.} Note que a escolha de $\ceil{~}$ por $\floor{~}$ é arbitrária, visto que, se $n=2m$, então $\floor{\frac{n}{2}}=\ceil{\frac{n}{2}}$ e, se $n=2m+1$, então
+$$\binom{n}{\floor{\frac{n}{2}}}=\binom{n}{m}=\binom{n}{n-m}=\binom{n}{m+1}=\binom{n}{\ceil{\frac{n}{2}}}$$
+\end{shaded}
+
+Existem muitas provas elegantes para o Teorema de Sperner, em particular duas delas são importantes:
+\begin{itemize}
+    \item Prova de Lubell
+        \subitem Prova um outro resultado mais forte conhecido como Desigualdade de Lym
+        \subitem É muito mais simples que a prova de Sperner
+        \subitem Mas tem uma aplicação mais difícil ao problema de Littlewood-Offord
+    \item Prove de Sperner
+        \subitem Desenvolve métodos mais gerais para combinatória extremal
+        \subitem Mais fácil de ser aplicada ao problema de Littlewood-Offord
+\end{itemize}
+
+De uma forma ou outra, apresentaremos somente a prova de Lubell:
+
+\cl{orange!15}
+
+\begin{proof}(Lubell)\\
+    Considere
+    $$S_n:=\{\pi:\ol{n}\to\ol{n}:\pi\text{ é bijetora}\}$$
+    i.e., o conjunto de todas as permutações em $\ol{n}$. Dizemos que $\pi$ é compatível com $A$ se
+    $$A=\{\pi(1),\pi(2),\dots,\pi(|A|)\}$$
+    seja $\mc{C}(A):=\{\pi\in S_n:\pi\text{ é compatível com }A\}$. Mostraremos que $\mc{C}(A)\cap\mc{C}(B)=\emptyset$ se $A\neq B$, para $A,B\in\mathscr{A}$.
+
+    Assuma por contradição que exista $\pi\in\mc{C}(A)\cap\mc{C}(B)$, portanto, assuma sem perda de generalidade que $|B|\leq|A|$, portanto
+    $$B=\{\pi(1),\dots,\pi(|B|)\}\subseteq\{\pi(1),\dots,\pi(|A|)\}=A$$
+    contradição, visto que $\mathscr{A}$ é uma anticadeia.
+
+    Com isso, e sabendo que
+    $$|\mc{C}(A)|=|A|!(n-|A|)!$$
+    visto que os primeiros $|A|$ elementos de $\im{\pi}$ são uma permutação de $A$. Então, como cada $\mc{C}(A)$ é distinto, temos que
+    $$\sum_{A\in\mathscr{A}}|\mc{C}(A)|=\sum_{A\in\mc{A]}}(n-|A|)!\leq|S_n|=n!$$
+    Sendo $p_k=|[\mathscr{A}]^k|$, temos que
+    $$\sum_{A\in\mathscr{A}}|A|!(n-|A|)!=\sum_{k=0}^np_kk!(n-k)!\leq n!$$
+    ou seja
+
+    \begin{shaded}
+    \begin{theorem}\textbf{(Desigualdade de LYM)}
+    \label{lym}
+        $$\sum_{k=0}^n\frac{p_k}{\binom{n}{k}}\leq1$$
+    \end{theorem}
+    \end{shaded}
+
+    Com isso, o Teorema de Sperner vira um corolário direto:
+
+    \begin{align*}
+        |\mathscr{A}| & = \sum_{k=0}^np_k = \binom{n}{\ceil{\frac{n}{2}}}\sum_{k=0}^n\frac{p_k}{\binom{n}{\ceil{n/2}}}\\
+        & \leq \binom{n}{\ceil{\frac{n}{2}}}\sum_{k=0}^n\frac{p_k}{\binom{n}{k}} \tag{Lema \ref{binommax}}\\
+        & \leq \binom{n}{\ceil{\frac{n}{2}}} \tag{LYM}
+    \end{align*}
+\end{proof}
+
+\subsection{Teorema de Lovász}
+
+Uma pergunta natural que surge é quantas anticadeias $\mathscr{A}\subseteq\mc{P}(\ol{n})$ existem tal que
+$$|\mathscr{A}|=\binom{n}{\ceil{\frac{n}{2}}}$$
+O Teorema a seguir responde tal pergunta
+
+\begin{shaded}
+\begin{theorem}
+    Se $n\equiv0~(\text{mod }2)$, $\psi_n(\mathscr{A})$ e $|\mathscr{A}|=\binom{n}{\ceil{n/2}}$, então
+    $$\mathscr{A}=[\ol{n}]^{\frac{n}{2}}$$
+    e, se $n\equiv1~(\text{mod }2)$, então
+    $$\mathscr{A}=[\ol{n}]^{\frac{n-1}{2}}\text{ ou }\mathscr{A}=[\ol{n}]^{\frac{n+1}{2}}$$
+\end{theorem}
+\end{shaded}
+
+\begin{proof}\textbf{(Lovász 1979)}\\
+    Se $n=2m$, como na penúltima desigualdade da prova do Teorema de Sperner usamos que
+    $$\binom{n}{\ceil{\frac{n}{2}}}\geq\binom{n}{k}$$
+    e, como $\binom{n}{m}>\binom{n}{k}$, $\forall k\neq m$, para garantir que valha a igualdade temos que ter $p_k=0$, $\forall k\neq m$, logo $\mathscr{A}=[\ol{n}]^m$ é a única possibilidade.
+
+    Analogamente, se $n=2m+1$, temos que
+    $$\binom{n}{m}=\binom{n}{m+1}>\binom{n}{k}$$
+    para todo $k\neq m$, $m + 1$, portanto $\mathscr{A}$ contém apenas conjuntos de tamanho $m$ e $m + 1$. Como precisamos que valha a igualdade, então em particular
+    $$\frac{p_m}{\binom{n}{m}}+\frac{p_{m+1}}{\binom{n}{m+1}}=1$$
+    ou seja
+    $$\sum_{\substack{|A|=m\\|A|=m+1}}|\mc{C}(A)|=|S_n|$$
+    com $A\in\mathscr{A}$. Portanto, dado $\pi\in S_n$, existe $A\in\mathscr{A}$ tal que $\pi\in\mc{C}(A)$, i.e., todo $\pi$ contribui para um elemento de $A$. $(*)$
+
+    Queremos provar que $\mathscr{A}$ consiste ou de todos $[\ol{n}]^m$ ou de todos $[\ol{n}]^{m+1}$. Assuma por contradição que $[\ol{n}]^{m+1}\nsubseteq\mathscr{A}$, logo $\mathscr{A}\cap[\ol{n}]^m\neq\emptyset$. Assim, existem $E,F\in[\ol{n}]^{m+1}$ tal que $E\in\mathscr{A}$ e $F\notin\mathscr{A}$, uma vez que $|\mathscr{A}|=|[\ol{n}]^{m+1}|=|[\ol{n}]^m|$.
+
+    Assim, renomeando os elementos de $E$ para que os elementos de $E\cap F$ ocorram por último, temos que $E=\{x_1,\dots,x_{m+1}\}$ e $F=\{x_i,\dots,x_{m+i}\}$, para algum $i\in\mbb{N}$. Como para $j=1<i$, $\{x_j,\dots,x_{m+j}\}=E\in\mathscr{A}$, então existe o maior $j<i$ tal que
+    $$E^\star=\{x_j,\dots,x_{m+j}\}\in\mathscr{A}\text{ e }F^\star=\{x_{j+1},\dots,x_{m+j+1}\}\notin\mathscr{A}$$
+    mas $E^\star\cap F^\star\subseteq E^\star\in\mathscr{A}$, como $\mathscr{A}$ é uma anticadeia, $E^\star\cap F^\star\notin\mathscr{A}$, mas também $E^\star\cap F^\star\subseteq F^\star$, onde $|E^\star\cap F^\star|=m$ e $|F^\star|=m+1$. Por causa de $(*)$ sabemos que, dados $X\subseteq Y$ arbitrário tal que $|X|=m$ e $|Y|=m+1$, com $X=\{x_1,\dots,x_m\}$ e $Y=X\cup\{x_{m+1}\}$, então toda permutação iniciando com $x_1,\dots,x_m$ é compatível com algum $A\in\mathscr{A}$, logo $X\in\mathscr{A}$, ou $Y\in\mathscr{A}$, contradição, visto que $E^\star\cap F^\star\notin\mathscr{A}$ e $F^\star\notin\mathscr{A}$, mas, se $X=E^\star\cap F^\star$ e $Y=F^\star$, temos $X\in\mathscr{A}$ ou $Y\in\mathscr{A}$.
+\end{proof}
+
+\section{Problema de Littlewood-Offord}
+
+\subsection{O Problema Inicial}
+
+\subsubsection{Resultado de Littlewood-Offord}
+
+Em 1943 Littlewood e Offord atacaram o seguinte problema: dados $\{z_i\}_{0\leq i\leq n}\subseteq\mbb{C}$ e $\boldsymbol{\varepsilon}=(\varepsilon_i)_{1\leq i\leq n}\in\{\pm1\}^n$, considere o polinômio
+$$P(x)=z_0+\varepsilon_1z_1x+\dots+\varepsilon_nz_nx^n$$
+quantas raízes reais tem $P(x)$ tipicamente?
+
+O resultado principal provado foi que, dado
+$M=|z_0|+\dots+|z_n|$
+então todos os $2^n$ possíveis polinômio $P(x)$ com $\boldsymbol{\varepsilon}$ variando em $\{\pm\}^n$, exceto por no máximo
+\begin{equation}
+O\rp{\frac{\ln{\ln{n}}}{\ln{n}}2^n}=o(2^n)\tag{$*$}
+\end{equation}
+deles, são tais que a equação $P(x)=0$ tem no máximo
+$$10\ln{n}\rp{\ln{\frac{M}{\sqrt{|z_0z_n|}}}+2\ln{n}^5}$$
+raízes reais.
+
+\cl{purple!15}
+\begin{shaded}
+\textbf{Obs.} Para ver $(*)$, vale lembrar que
+\begin{align*}
+    O(f) & = \left\{g:\mbb{R}\to\mbb{R}:\lim_{x\to\infty}\left|\frac{g(x)}{f(x)}\right|<\infty\right\}\\
+    o(f) & = \left\{g:\mbb{R}\to\mbb{R}:\lim_{x\to\infty}\left|\frac{g(x)}{f(x)}\right|=0\right\}
+\end{align*}
+Como
+$$\lim_{x\to\infty}\frac{\ln{\ln{x}}}{\ln{x}}\stackrel{\mathclap{\text{(L'H)}}}{~=~}\lim_{x\to\infty}\frac{\frac{1}{\ln{x}}\cancel{\frac1x}}{\cancel{\frac1x}}=0$$
+portanto, se
+$$\lim_{x\to\infty}\left|\frac{g(x)\ln{x}}{2^x\ln{\ln{x}}}\right|=L\in\mbb{R}$$
+então
+$$\lim_{x\to\infty}\frac{g(x)}{2^x}=0$$
+i.e., $O(f)\subseteq o(f)$ e, como $o(f)\subseteq O(f)$ por definição, então eles são iguais.
+\end{shaded}
+
+\subsubsection{O Problema Geométrico}
+
+Para provar tal resultado Littlewood e Offord tiveram que considerar o seguinte problema geométrica: o quão concentrada pode ser a distribuição das $2^n$ somas
+$$\sum_{1\leq j\leq n}\varepsilon_jz_j,~\varepsilon_j\in\{\pm1\}$$
+Em outras palavras
+
+\cl{green!15}
+\begin{shaded}
+\textbf{O Problema de Littlewood-Offord:} Sejam $z_1,\dots,z_n\in\mbb{C}$ tal que $|z_j|\geq1$, $1\leq j\leq n$, e $\boldsymbol{\varepsilon}=(\varepsilon_j)_{1\leq j\leq n}\in\{\pm1\}^n$, seja
+$$S(\boldsymbol{\varepsilon}):=\sum_{1\leq j\leq n}\varepsilon_jz_j$$
+Se $\chi_r(n):=|\{|S(\boldsymbol{\varepsilon})|<r:\boldsymbol{\varepsilon}\in\{\pm1\}^n\}|$, i.e., a quantidade das $2^n$ somas que caem em um disco fechado de raio $r$, quanto vale $c(\chi_r(n))$?
+\end{shaded}
+
+O que Littlewood e Offord provaram foi que:
+
+$$c(\chi_r(n))\leq c\frac{(r+1)2^n}{\sqrt{n}}\ln{n}$$
+onde $c$ é uma constante universal.
+
+\subsection{Estimativa de Erdös}
+
+2 anos depois, Paul Erdös provou, por meio do Teorema de Sperner, que
+\cl{orange!15}
+\begin{shaded}
+\begin{theorem}\textbf{(Erdös)}
+    $$c(\chi_r(n))\leq B\frac{(r+1)2^n}{\sqrt{n}}$$
+    onde $B$ é uma constante universal
+\end{theorem}
+\end{shaded}
+e, de fato, tal limitante não pode ser melhorado a menos da constante.
+
+\subsubsection{O Melhor Limitante}
+
+Em particular, com o avanço de Erdös, podemos reenunciar o problema como:
+
+\cl{green!15}
+\begin{shaded}
+\textbf{O Problema de Erdös-Littlewood-Offord:} Considere a variável aleatória
+$$X=a_1\xi_1+\dots+a_n\xi_n$$
+onde $a_i\in\mbb{R}\setminus\{0\}$ são fixos e $\xi_i\sim\text{Ber}(\frac12)$ são independentes. O problema afirma que a probabilidade de concentração máxima possível
+$$\max_{x\in\mbb{R}}\mbb{P}(X=x)=\frac{1}{2^n}\binom{n}{\ceil{\frac{n}{2}}}$$
+\end{shaded}
+
+Para mostrarmos que o limitante de Erdös é o melhor possível, vamos antes enunciar uma forma equivalente do problema:
+
+Some $z_1+\dots+z_n$ a $S(\boldsymbol{\varepsilon})$ e divida por $2$, logo teremos uma soma da forma
+$$S(\boldsymbol{\delta})=\sum_{1\leq j\leq n}\delta_jz_j$$
+com $\boldsymbol{\delta}=(\delta_j)_{1\leq j\leq n}\in\{0,1\}^n$. Logo $S(\boldsymbol{\varepsilon})$ está contida em um disco de raio $r$ sse $S(\boldsymbol{\delta})$ está contida em um disco de diâmetro $\Delta=r$.
+
+Considere agora o caso em que $z_1=\dots=z_n=1$ e sejam $u_0<\dots<u_\Delta$ distribuidos simetricamente em torno de $\frac{n}{2}$, i.e., tal que
+$$\binom{n}{u_0}+\dots+\binom{n}{u_\Delta}$$
+é máximo, por ex. $u_0=\ceil{\frac{n}{2}}+\floor{\frac{\Delta}{2}}$, e $u_i=u_0+i$. E seja
+$$\mathscr{A}:=[\ol{n}]^{u_0}\cup\dots\cup[\ol{n}]^{u_\Delta}$$
+
+Assim, temos que, dados $A,A'\in\mathscr{A}$, como $u_0\leq|A|,|A'|\leq u_\Delta$ e $u_j$ são consecutivos, então
+$$||A| - |A'|| \leq u_0 - u_\Delta \leq \Delta$$
+Assim, considerando o disco $B_\Delta$ de diâmetro $\Delta$ ao redor de $u_0,\dots,u_\Delta$, temos que $\mathscr{A}$ contém todas as somas que caem em $B_\Delta$, visto que
+$$S(A)=\sum_{j\in A}\cancelto{1}{z_j}=|A|=\sum_{1\leq j\leq n}\delta_jz_j$$
+para $\delta_j=\chi_A(j)$.
+
+Assim
+\begin{align*}
+    |\mathscr{A}| & = \sum_{0\leq j\leq\Delta}\binom{n}{u_j} = \sum_{|j-n/2|\leq\frac{\Delta}{2}}\binom{n}{j}\\
+    & = (1 + o(1))(\Delta+1)\sqrt{\frac{2}{\pi n}}2^n\tag{$*$}\\
+    & \geq c\frac{(\Delta+1)2^n}{\sqrt{n}}
+\end{align*}
+para uma constante universal $c$ e $n\geq n_0(\Delta)$. Portanto o Teorema de Erdös não pode ser substancialmente melhorado.
+
+\cl{purple!15}
+\begin{shaded}
+\textbf{Obs.} A dedução da estimativa em $(*)$ pode ser feita por meio da fórmula de Stirling. Seja $|j-\frac{n}{2}|\leq\frac{\Delta}{2}$, logo, sendo $m=\ceil{\frac{n}{2}}$, portanto, temos $j=m+k$, para $k\leq\frac{\Delta}{2}$ e
+\begin{align*}
+    \binom{n}{j} & = \binom{n}{m+k}\\
+    & = \binom{n}{m}\cdot\frac{m(m-1)\dots(m-(k-1))}{(m+k)\dots(m+1)}\\
+    & = \binom{n}{m}\cdot\frac{(m)_k}{(m+k)_k}
+\end{align*}
+quando $n\to\infty$, $\frac{(m)_k}{(m+k)_k}\to 1$, portanto
+$$\sum_{|j-\frac{n}{2}|\leq\frac{\Delta}{2}}\binom{n}{j}\sim(\Delta+1)\binom{n}{\ceil{\frac{n}{2}}}$$
+e é fácil deduzir que
+$$\binom{n}{\ceil{\frac{n}{2}}}\sim\frac{2^n}{\sqrt{n}}$$
+pela Fórmula de Stirling. Portanto
+$$\sum_{|j-\frac{n}{2}|\leq\frac{\Delta}{2}}\binom{n}{j}=\Theta\rp{\frac{(\Delta+1)2^n}{\sqrt{n}}}$$
+no análogo discreto, sabemos que $f=\Theta(g)$ sse existem $c_1,c_2\in\mbb{R}$ positivas tal que $f(x)\leq c_1g(x)$ e $f(x)\geq c_2g(x)$.
+\end{shaded}
+
+\subsubsection{O Caso Real}
+
+Para provar o Teorema de Erdös vamos antes mostrar que vale o caso real, i.e.,
+
+\cl{blue!15}
+\begin{shaded}
+\begin{lemma}
+    \label{littlewood-real}
+    Dados $x_1,\dots,x_n\in\mbb{R}$ tal que $x_j\geq1$, para $1\leq j\leq n$ $\Delta\geq0$ real, então
+    $$c(\chi_\Delta(n))\leq c\frac{(\floor{\Delta}+1)2^n}{\sqrt{n}}$$
+    onde $c$ é uma constante universal.
+\end{lemma}
+\end{shaded}
+
+\begin{proof}
+    Seja $J$ um intervalo de diâmetro $1$. Considere
+    $$\mathscr{A}(J):=\{A\subseteq\ol{n}:S(A)\in J\}$$
+    dados $A,A'\in\mathscr{A}(J)$, se $A\subseteq A'$, então $|S(A)-S(A')|\geq1$, visto que $x_j\geq1$, para $1\leq j\leq n$. Logo, se $S(A)\in J$, então $S(A')\notin J$, e vice-versa, portanto $\mathscr{A}$ forma uma anticadeia.
+
+    Agora, dado um intervalo $I$ de diâmetro $\Delta$, divida-o em intervalos $I_0,\dots,I_{\floor{\Delta}}$ como $J$, logo $\mathscr{A}(I_j)$ é uma anticadeia, $1\leq j\leq n$. Seja
+    $$\mathscr{A}:=\bigsqcup_{i=0}^{\floor{\Delta}}\mathscr{A}(I_i)$$
+    portanto, pelo Teorema de Sperner,
+    \begin{align*}
+    |\mathscr{A}| & = \sum_{i=0}^{\floor{\Delta}}|\mathscr{A}(I_i)| \leq \sum_{i=0}^{\floor{\Delta}}\binom{n}{\ceil{\frac{n}{2}}}\\
+    & = (\Delta+1)\binom{n}{\ceil{\frac{n}{2}}}\leq c\frac{(\Delta+1)2^n}{\sqrt{n}}
+    \end{align*}
+    para algum $c\in\mbb{R}$.
+\end{proof}
+
+\subsubsection{O Caso Complexo}
+
+Com isso, podemos provar agora o caso complexo:
+
+\begin{proof}
+    Como $|z_j|\geq1$, então $|\Re(z_j)|\geq\frac{1}{\sqrt{2}}>\frac12$ ou $|\Im(z_j)|\geq\frac{1}{\sqrt{2}}>\frac12$. Se mais da metade dos $z_j$ tem parte imaginária maior que $\frac12$, multiplique todos $z_j$ por $i$, i.e., rotacione o sistema por $\frac\pi2$, o que obviamente não altera o enunciado do Teorema. Analogamente, se a maioria dos $z_j$ tem parte real $<-\frac12$, substitua-os por $-z_j$.
+    
+    Em outras palavras, podemos supor sem perda de generalidade que
+    $$\Re(z_j)\geq\frac12$$
+    para todo $1\leq j\leq t$, com $t\geq\frac{n}{2}$
+
+    Fixando $\varepsilon_j\in\{\pm1\}$, para $j>t$, arbitrariamente, temos $2^{n-t}$ formas de escolhê-los. Se, das $2^t$ somas da forma
+    $$\sum_{1\leq j\leq t}\varepsilon_jz_j,~(1\leq j\leq t)$$
+    $N$ delas estão em um disco fechado de raio $r$, defina
+    $$x_j=2\Re(z_j)\geq1,~(1\leq j\leq t)$$
+    então, considerando apenas a parte real dos $z_j$, temos $N$ somas da forma
+    $$\sum_{1\leq j\leq t}\varepsilon_jx_j,~(1\leq j\leq t)$$
+    contidas em um intervalo fechado de comprimento $4r$, visto que, se
+    $$\left|\Re\rp{\sum_{1\leq j\leq t}\varepsilon_jz_j}\right|=\left|\sum_{1\leq j\leq t}\varepsilon_j\Re(z_j)\right|\leq r$$
+    então
+    $$\left|\sum_{1\leq j\leq t}\varepsilon_j \underbrace{2\Re(z_j)}_{x_j}\right|\leq 2r$$
+    logo, pelo Lema \ref{littlewood-real}
+    \begin{equation}
+    N\leq (4r+1)\binom{t}{\ceil{\frac{t}{2}}}\leq C\frac{(4r+1)2^t}{\sqrt{t}}\tag{$*$}
+    \end{equation}
+    Com isso, provamos que, para cada uma das possíveis combinações de $\varepsilon_j\in\{\pm1\}$, $(1\leq j\leq t)$, o número máximo de somas que pertencem a um disco fechado de raio $r$ é limitado superiormente por $(*)$. Como há ainda $2^{n-t}$ formas de fixar os $\varepsilon_j$, $(j>t$ e $t\geq\frac{n}{2})$ temos então que, para uma constante absoluta $B$
+    $$c(\chi_r(n))\leq C\frac{(4r+1)2^t}{\sqrt{t}}2^{n-t}\leq B\frac{(r+1)2^n}{\sqrt{n}}$$
+\end{proof}
+
+\subsubsection{Generalizações em $\mbb{R}^d$}
+
+Tendo resolvido o problema em $\mbb{R}$ e $\mbb{C}$, é possível passar a considerar a genralização:
+
+Dados $z_j\in\mbb{R}^d$ tal que $||z_j||\geq1$, $1\leq j\leq n$, seja $V=(z_j)_{1\leq j\leq n}$ e considere $\Sigma$ o conjunto das somas $S(\boldsymbol{\delta})$, com $\boldsymbol{\delta}\in\{0,1\}^n$ contando multiplicidade de ocorrência. Defina
+$$m(V,\Delta):=\max_{\substack{B\subseteq \mbb{R}^d\\\ell(B)=\Delta}}|B\cap\Sigma|$$
+e defina como uma nova notação para $\chi_r(n)$
+$$m_d(n,\Delta):=\max_{V}m(V,\Delta)$$
+com $V$ variando em todas as sequências de vetores $z_1,\dots,z_n\in\mbb{R}^d$ tal que $||z_j||\geq1$.
+
+O Teorema de Erdös garante que
+$$c(\varphi_\Delta(n))=m_1(n,\Delta)=\sum_{j=0}^\Delta\binom{n}{u_j}$$
+Katona e Kleitman provaram que
+$$m_2(n,\Delta)=\binom{n}{\ceil{\frac{n}{2}}}$$
+se $\Delta<1$. E Kleitman posteriormente generaliziou para $d\geq2$. Até que eventualmente Frank e Füredi publicaram no Annals of Mathematics em 1988 a confirmação da conjectura de Erdös
+
+\cl{orange!15}
+\begin{shaded}
+\begin{theorem}
+    Seja $d$ um inteiro positivo e $\Delta\geq0$ real fixo, então
+    $$m_d(n,\Delta)=(\floor{\Delta}+1+o(1))\binom{n}{\ceil{\frac{n}{2}}}$$
+    onde $o(1)\to0$ quando $n\to\infty$. Ou seja
+    $$m_d(n,\Delta)\leq c(d)(\Delta+1)\binom{n}{\ceil{\frac{n}{2}}}$$
+    onde $c(d)$ é uma constante que depende somente de $d$.
+\end{theorem}
+\end{shaded}
+
+\section{Teorema de Behrend}
+
+\subsection{Como Mensurar $A\subseteq\mbb{N}$}
+
+Relembrando a definição anterior de que uma sequência $(a_i)$ de inteiros positivos $a_1<a_2<\dots$ é primitiva se $a_i\nmid a_j$, $\forall i<j$, vimos no primeiro capítulo que o número máximo de sequências primitivas em $\ol{2n}$ é $n$.
+
+Em geral, dada uma sequência primitiva $A=(a_i)$, estamos interessados em mensurar o \textit{tamanho} de $A$.
+
+Obviamente $|A|$ é uma péssima escolha, visto que $A$ pode ser infinito, digamos
+$$A=\{p\in\mbb{N}:p\text{ é primo}\}$$
+Portanto, peguemos
+$$\mu(A,x):=\sum_{a_i\leq x}\frac{1}{a_i}$$
+A fim de que possamos comparar com $\mbb{N}$, definamos o que será conhecido como \textit{Densidade Aritmética}
+$$d(A):=\lim_{n\to\infty}\frac{\mu(A,n)}{H_n}$$
+onde $H_n$ é a $n$-ésima soma parcial da série harmônica.
+
+\subsubsection{Propriedades da Densidade Aritmética}
+
+Um fato relativamente trivial para aqueles que tiveram contato com matemática à nível de graduação é de que $|\{n^2:n\in\mbb{N}\}|=\aleph_0=|\{n:n\in\mbb{N}\}|$. Apesar disso, de fato, parece haver uma intuição forte para dizer que os quadrados perfeitos $n^2$ estão mais \textit{dispersos} que os naturais $n$, embora haja a mesma quantidade de cada qual.
+
+A Densidade Aritmética, diferentemente da cardinalidade, é capaz de capturar essa ideia de dispersão: Note que, se $A=\{n^2:n\in\mbb{N}\}$, então
+$$d(A)=\lim_{n\to\infty}\frac{\sum_{k=1}^n\frac{1}{k^2}}{H_n}=0$$
+visto que
+$$\lim_{n\to\infty}\mu(A,n)=\frac{\pi^2}{6}$$
+mas $\lim_{n\to\infty}H_n=\infty$. Em contrapartida, $d(\mbb{N})=1$, i.e., $A\prec\mbb{N}$, sob a relação de ordem induzida por $d$.
+
+Em geral
+\begin{itemize}
+    \item Se $F$ é finito, $d(F)=0$
+    \item $d(\mbb{N}\setminus F)=1-d(F)$
+    \item Dado $A=\{an+b:n\in\mbb{N}\}$, $a,b\in\mbb{R}$, então
+    $$d(A)=\frac1a$$
+    em particular $d(2\mbb{N})=\frac12$
+\end{itemize}
+
+\subsubsection{Teorema de Davenport-Erdös}
+
+Dada essa motivação, utilizaremos o seguinte teorema que enuncia uma equivalência entre algumas noções de densidade, em particular
+
+\cl{orange!15}
+\begin{shaded}
+\begin{theorem}\textbf{(Davenport-Erdös)}\\
+    Dado $A\subseteq\mbb{N}$, seja $M(A)=\{kA:k\in\mbb{N}\}$, o Teorema diz que a densidade aritmética é equivalente a densidade logarítmica
+    $$\delta(A)=\lim_{n\to\infty}\frac{\mu(A,n)}{\ln{n}}$$
+\end{theorem}
+\end{shaded}
+
+Não é difícil ver, visto que
+$$\lim_{n\to\infty}H_n-\ln{n}=\gamma$$
+Analogamente, outra relação íntima que ambas tem é que, como $f(x)=\frac1x$ é estritamente decrescente para $x>0$, então
+$$\int\limits_1^{x+1}\frac{\dd u}{u} < \sum_{k=1}^x\frac1k = 1 + \sum_{k=1}^{x-1}\frac{1}{k+1} < 1 + \int\limits_1^x\frac{\dd u}{u}$$
+logo
+$$\ln{x+1}<H_x<\ln{x}+1$$
+Pelo Teorema do Confronto, é fácil ver que
+$$\delta(\mbb{N})=1$$
+
+\subsection{Teorema de Behrend}
+
+Fixada a notação, podemos agora perguntar: Dado $A=(a_i)$ uma sequência primitiva, o que podemos dizer sobre $\delta(A)$?
+
+Isso é o que o Teorema de Behrend estima
+
+\begin{shaded}
+\begin{theorem}\textbf{(Behrend)}\\
+    Existe $c>0$ tal que, para toda sequência primitiva $A=(a_i)$
+    $$\mu(A,n)\leq c\frac{\ln{n}}{\sqrt{\ln{\ln{n}}}},~n\geq3$$
+    ou seja
+    $$\delta(A)=\lim_{n\to\infty}\frac{c}{\sqrt{\ln{\ln{n}}}}$$
+\end{theorem}
+\end{shaded}
+
+A fim de provaremos tal teorema precisamos antes do seguinte lema
+
+\cl{blue!15}
+\begin{shaded}
+\begin{lemma}Para todo $x\geq2$
+    $$\sum_{m\leq x}\sigma_0(m)\leq 3x\ln{x}$$
+    onde $\sigma_n$ é a função divisora.
+\end{lemma}
+\end{shaded}
+
+\begin{proof}
+    Podemos escrever o somatório à esquerda como a quantidade de pares $(a,b)$ tais que $ab\leq x$, portanto
+    \begin{align*}
+        \sum_{m\leq x}\sigma_0(m) & = \sum_{ab\leq x}1 = \sum_{a\leq x}\sum_{b\leq\frac{x}{a}}1\\
+        & = \sum_{a\leq x}\floor{\frac{x}{a}}\leq \sum_{a\leq x}\frac{x}{a}
+    \end{align*}
+    visto que $\floor{x}\leq x$, $\forall x\in\mbb{R}$. Além disso, como $H_a<\ln{a}+1\leq 3\ln{a}$, então
+    $$\sum_{m\leq x}\sigma_0(m)\leq x\sum_{a\leq x}\frac1a=xH_x\leq 3x\ln{x}$$
+\end{proof}
+
+Dada uma sequência primitiva $A=(a_i)$, para $u>0$ seja
+$$r(u):=|\{n\in\mbb{A}:n\mid u\}|$$
+i.e., $r(u)$ é o análogo do $\sigma_0$, mas para elementos apenas em $A$. Analogamente, temos que
+\begin{align*}
+    \varrho(n) & := \sum_{u\leq n}r(u) = \sum_{\substack{ma\leq n\\ a\in A}}1\\
+    & =  \sum_{\substack{a\leq n\\ a\in A}}\sum_{ma\leq n}1 = \sum_{\substack{a\leq n\\ a\in A}}\floor{\frac{n}{a}}\\
+    & = \sum_{\substack{a\leq n\\ a\in A}}\rp{\frac{n}{a}-\varepsilon}
+\end{align*}
+como $0\leq\varepsilon<1$, temos que
+$$\varrho(n)=-|\{a\in A:a\leq n\}|\cdot\varepsilon+n\sum_{\substack{a\leq n\\ a\in A}}\frac1a$$
+portanto, visto que $|-|\{a\in A:a\leq n\}|\cdot\varepsilon|\leq n\varepsilon < n$, então
+$$\varrho(n)=n\mu(A,n)+O(n)$$
+ou seja
+$$\sum_{a_i\leq n}\frac{1}{a_i}=\frac{1}{n}\varrho(n)+O(1)$$
+logo, para provarmos o Teorema de Behrend basta estimarmos $\varrho(n)$, logo, estimaremos antes $r(u)$.
+
+\subsubsection{Estimativa de $r(u)$ com $(\dagger)$}
+
+Seja $\omega(u):=|\{p\in\mbb{P}:p\mid u\}|$, i.e., a quantidade de divisores primos de $u$, e seja $\text{div}(u)$ o conjunto dos divisores de $u$.
+\begin{equation}
+    \text{Assuma que os elementos de $A$ são livres de quadrados}\tag{$\dagger$}
+\end{equation}
+Como $r(u)=|\text{div}(u)\cap A|$ e $A$ satisfaz $(\dagger)$, então temos que, de certa forma, $\text{div}(u)\cap A$ é \textit{"subconjunto"} de $\mc{P}(\ol{\omega(u)})$, onde, por exemplo, $\{1,2,3\}\in\mc{P}(\ol{\omega(u)})$ representa $p_1\cdot p_2\cdot p_3$. Além disso, $\text{div(u)}\cap A$ é uma anticadeia, visto que $A$ é primitiva, portanto, pelo Teorema de Sperner
+$$r(u)\leq\binom{\omega(u)}{\ceil{\omega(u)/2}}=O\rp{\frac{2^{\omega(u)}}{\sqrt{\omega(u)}}}$$
+Assim
+\begin{align*}
+    \varrho(n) & = \sum_{u\leq n}r(u)\\
+    & = \sum_{\substack{u\leq n\\\omega(u)\leq\ell}}r(u) + \sum_{\substack{u\leq n\\\omega(u)\geq\ell}}r(u)\\
+    & = \sum_{\substack{u\leq n\\\omega(u)\leq\ell}}O\rp{\frac{2^{\omega(u)}}{\sqrt{\omega(u)}}} + \sum_{\substack{u\leq n\\\omega(u)\geq\ell}}O\rp{\frac{2^{\omega(u)}}{\sqrt{\omega(u)}}}
+\end{align*}
+Temos que, para $f(x)=\frac{2^x}{\sqrt{x}}$
+$$f'(x)=\frac{\ln{2}2^x\sqrt{x}+\frac{2^x}{2\sqrt{x}}}{x}=\frac{2^x}{\sqrt{x}}\rp{\ln{2}+\frac{1}{2x}}$$
+logo $f'(x)>0$ sse $\frac{1}{2x}>\ln{\frac12}$, mas $\ln{\frac12}<0$, portanto $f$ é estritamente crescente. Assim, visto que $\omega(u)\leq\ell$, dado $g$ tal que
+$$g\in O\rp{\frac{2^{\omega(u)}}{\sqrt{\omega(u)}}}$$
+existe $c\in\mbb{R}$ tal que
+$$|g(u)|\leq c\frac{2^{\omega(u)}}{\sqrt{\omega(u)}}\leq c\frac{2^\ell}{\sqrt{\ell}}$$
+como temos que $f\cdot O(g)=O(f\cdot g)$, então $g\in O(c)\frac{2^\ell}{\sqrt{\ell}}$ e, como $O(c)=O(1)$, então
+$$\sum_{\substack{u\leq n\\\omega(u)\leq\ell}}O\rp{\frac{2^{\omega(u)}}{\sqrt{\omega(u)}}}=O(1)\frac{2^\ell}{\sqrt{\ell}}n$$
+visto que
+$$\sum_{\substack{u\leq n\\\omega(u)\leq\ell}}g(u)\leq\sum_{u\leq n}c\frac{2^\ell}{\sqrt{\ell}}=c\frac{2^\ell}{\sqrt{\ell}}n$$
+Analogamente, se $g\in O\rp{\frac{2^{\omega(u)}}{\sqrt{\omega(u)}}}$ com $\omega(u)>\ell$, então
+$$|g(u)|\leq c\frac{2^{\omega(u)}}{\sqrt{\omega(u)}}\leq c\frac{2^{\omega(u)}}{\sqrt{\ell}}$$
+e, portanto
+$$\sum_{\substack{u\leq n\\\omega(u)\geq\ell}}O\rp{\frac{2^{\omega(u)}}{\sqrt{\omega(u)}}}=O\rp{\frac{1}{\sqrt{\ell}}}\sum_{u\leq n}2^{\omega(u)}$$
+
+Logo, vale que
+
+$$\varrho(n)\leq O(1)\frac{2^\ell}{\sqrt{\ell}}n + O\rp{\frac{1}{\sqrt{\ell}}}\sum_{u\leq n}2^{\omega(u)}$$
+
+Com o intuito de melhorar tal estimativa, vamos provar o seguinte lema
+
+\cl{blue!15}
+\begin{shaded}
+\begin{lemma}
+    $$\sum_{u\leq n}2^{\omega(u)}\leq\sum_{u\leq n}\sigma_0(n)$$
+\end{lemma}
+\end{shaded}
+
+\begin{proof}
+    Vamos mostrar que $\sigma_0$ é multiplicativa, sejam $m,n\in\mbb{N}$ tal que $\text{gcd}(m,n)=1$, logo, se $d\mid mn$, então $d=rs$, onde $r\mid m$ e $r\mid n$, note que $\text{gcd}(r,s)=1$, pois, caso contrário, $m$ e $n$ teriam um fator em comum. Logo
+    $$\sigma_0(mn)=\sum_{d\mid mn}1=\sum_{\substack{r\mid m\\ r\mid n}}1=\sigma_0(m)\sigma_0(n)$$
+    Analogamente
+    $$\omega(mn)=\sum_{\substack{p\mid mn\\ p\in\mbb{P}}}1$$
+    mas, se $p$ é primo e $p\mid mn$, então $p\mid m$ ou $p\mid n$, logo
+    $$\omega(mn)=\sum_{\substack{p\mid m\\ p\in\mbb{P}}}1+\sum_{\substack{p\mid n\\ p\in\mbb{P}}}1=\omega(m)+\omega(n)$$
+    Assim, dado $n=p_1^{\alpha_1}\cdot...\cdot p_k^{\alpha_k}$
+    temos
+    \begin{align*}
+        \sigma_0(n) & = \sigma_0(p_1^{\alpha_1}\cdot...\cdot\sigma_0(p_k^{\alpha_k})\\
+        & = (\alpha_1+1)\cdot...\cdot(\alpha_k+1)
+    \end{align*}
+    e
+    $$\omega(n)=\omega(p_1^{\alpha_1})+\dots+\omega(p_k^{\alpha_k})=k$$
+
+    Logo
+    $$2^{\omega(n)}=2^k\leq(\alpha_1+1)\cdot...\cdot(\alpha_k+1)=\sigma_0(n)$$
+    portanto
+    $$\sum_{u\leq n}2^{\omega(u)}\leq\sum_{u\leq n}\sigma_0(u)$$
+\end{proof}
+
+Pelos dois últimos lemas, e escolhendo $\ell=\ln{\ln{n}}$ na estimativa de $\varrho(n)$ temos que
+$$\varrho(n)\leq O\rp{\frac{2^{\ln{\ln{n}}}}{\sqrt{\ln{\ln{n}}}}n}+O\rp{\frac{n\ln{n}}{\sqrt{\ln{\ln{n}}}}}$$
+e, uma vez que $f(n)=\frac{2^{\ln{\ln{n}}}}{\ln{n}}$ é tal que
+$$f'(n)=\frac{(\ln{2}-1)2^{\ln{\ln{2}}}}{n\ln{n}^2}$$
+então $f'(n)<0$ se $n>0$, então $f(n)\geq0$ e é estritamente decrescente, portanto converge quando $n\to\infty$, assim
+$$\lim_{n\to\infty}\frac{2^{\ln{\ln{n}}}}{\ln{n}}\stackrel{\mathclap{\text{(L'H)}}}{~=~}\ln{2}\lim_{n\to\infty}\frac{2^{\ln{\ln{n}}}}{\ln{n}}$$
+
+como o limite $L$ existe, então $L=\ln{2}L$, logo $L=0$, e, portanto
+
+$$\varrho(n)\leq 2O\rp{\frac{n\ln(n)}{\sqrt{\ln{\ln{n}}}}}=O\rp{\frac{n\ln(n)}{\sqrt{\ln{\ln{n}}}}}$$
+
+E, como $\mu(A,n)=\frac{\varrho(n)}{n}+O(1)$, então
+
+$$\mu(A,n)=O\rp{\frac{\ln{n}}{\sqrt{\ln{\ln{n}}}}}$$
+
+\subsubsection{Eliminação da Hipótese $(\dagger)$}
+
+Como na prova assumimos que valia $(\dagger)$, mostrar que a hipótese pode ser eliminada é suficiente para provar o Teorema de Behrend. Para isso, defina uma sequência de sequência $(a_i^k)$ como os elementos de $A$ tal que $a_i^k=k^2q_i^k$, onde $q_i^k$ é livre de quadrados.
+Assim
+\begin{align*}
+    \sum_{a_i\leq n}\frac{1}{a_i} & = \sum_{k\geq1}\sum_{a_i^k\leq n}\frac{1}{a_i^k}\\
+    & = \underbrace{\sum_{a_i^1\leq n}\frac{1}{q_i^1}}_{\text{livre de quadrados}} + \underbrace{\sum_{a_i^2\leq n}\frac{1}{2^2q_i^2}}_{\text{com um fator }2^2} + \dots
+\end{align*}
+logo
+$$\sum_{a_i\leq n}\frac{1}{a_i}=\sum_{k\geq1}\frac{1}{k^2}\sum_{q_i^k\leq\frac{n}{k^2}}\frac{1}{q_i^k}\leq\sum_{k\geq1}\frac{1}{k^2}\sum_{q_i^k\leq n}\frac{1}{q_i^k}$$
+como $(q_i^k)$ é primitiva e livre de quadrados, vale o Teorema de Behrend com $(\dagger)$, logo
+$$\mu(A,n) \leq \sum_{k\geq1}\frac{1}{k^2}c\frac{\ln{n}}{\sqrt{\ln{\ln{n}}}}$$
+onde o primeiro somatório vale $\zeta(2)=\frac{\pi^2}{6}$, portanto
+$$\mu(A,n)=O\rp{\frac{\ln{n}}{\sqrt{\ln{\ln{n}}}}}$$
+
+\section{Teorema de Erdös-Ko-Rado}
+
+\subsection{Sistemas Intersectantes}
+
+Após estudarmos as sequências primitivas definidas na introdução, vamos agora estudar os sistemas intersectantes, i.e., coleções $\mathscr{A}\subseteq\mc{P}(\ol{n})$ tais que, dados $A,A'\in\mathscr{A}$, $A\cap A'\neq\emptyset$.
+
+Se definirmos
+$$\mathscr{A}_1:=\{A\subseteq\ol{n}:1\in A\}$$
+temos que $|\mathscr{A}_1|=2^{n-1}$
+e, se $|\mathscr{A}|>2^{n-1}$, então existe $A$ tal que $A\in\mathscr{A}$ e $\ol{n}\setminus A\in\mathscr{A}$, i.e., não é um sistema intersectante, como mostrado no capítulo 1. Consideremos, portanto, um problema totalmente diferente de sistemas intersectantes, onde $\mathscr{A}\subseteq[\ol{n}]^k$.
+
+Um exemplo que nos dá $|\mathscr{A}|$ grande é: se $2k>n$, então $\mathscr{A}=[\ol{n}]^k$ é intersectante e, se $2k\leq n$, seja
+$$\mathscr{A}_0=\{A\subseteq\ol{n}:|A|=k,1\in A\}$$
+obviamente $\mathscr{A}_0$ é intersectante e
+$$|\mathscr{A}_0|=\binom{n-1}{k-1}$$
+o reslultado que provaremos é
+
+\cl{orange!15}
+\begin{shaded}
+\begin{theorem}\textbf{(Erdös-Ko-Rado)}\\
+    Se $\mathscr{A}\subseteq[\ol{n}]^k$ é um sistema intersectante, com $n\geq2k>0$, então
+    $$|\mathscr{A}|\leq\binom{n-1}{k-1}$$
+    Ademais, se $n>2k$ e vale a igualdade, então $\mathscr{A}\cong\mathscr{A}_0$, i.e., existe $b:\ol{n}\to\ol{n}$ bijetora tal que
+    $$A\in\mathscr{A}\Leftrightarrow b(A)\in\mathscr{A}_0$$
+\end{theorem}
+\end{shaded}
+
+Antes de provarmos tal Teorema, vamos enunciar um lema importante e que captura parte da elegância da prova de Katona.
+
+Seja $C$ um círculo dividido por $n$ pontos em $n$ arestas e seja um arco de comprimento $k$ um conjunto consistindo dos $k+1$ pontos consecutivos e dos $k$ lados entre eles, então temos:
+
+\cl{blue!15}
+\begin{shaded}
+\begin{lemma}
+    Seja $n\geq2k$, dados $t$ arcos distintos $A_1,\dots,A_t$ de comprimento $k$, se quaisquer dois arcos tem um lado em comum, então $t\leq k$.
+\end{lemma}
+\end{shaded}
+
+\begin{proof}
+    Note que, dado qualquer ponto em $C$, ele é o ponto de extremidade de no máximo um arco. De fato, se $A_i$ e $A_j$ tem um ponto de extremidade $v$ em comum, então eles tem de ter começado em direções distintas, uma vez que eles são distintos. Mas caso isso ocorra eles não teriam nenhum lado em comum, visto que $n\geq2k$. Fixemos $A_1$, como $A_i$ tem um lado em comum com $A_1$ e os pontos de extremidade tem de ser distintos, então algum dos pontos de extremidade de $A_i$ é um ponto interno de $A_1$. Como $A_1$ contém $k-1$ pontos internos, então podem ter no máximo $k-1$ tais arcos e, junto a $A_1$, no máximo $k$.
+\end{proof}
+
+Voltemos agora a prova do Teorema de Erdös-Ko-Rado.
+
+\begin{proof}\textbf{(Katona)}
+    A seguinte prova elegante feita por contagem dupla deve-se a Katona. Considere $\phi:\mbb{Z}/n\mbb{Z}\to\ol{n}$ e $a_i:=\phi(i)$. Dizemos que $(A,\phi)\in\mc{C}(A,\phi)$ ($A$ e $\phi$ são compatíveis) se, para algum $i\in\mbb{Z}/n\mbb{Z}$
+    $$A=\{a_{i+1},\dots,a_{i+k}\}$$
+    Tais conjuntos compatíveis podem ser interpretados como arcos em uma circunferência com $n$ pontos. Como, por hipótese, $\mathscr{A}$ é uma família intersectante, sabemos, pelo Lema anterior, que no máximo $k$ conjuntos $A$ são compatíveis com $\phi$.
+
+    Uma outra forma, é considerar, para cada $2\leq j\leq k$, os conjuntos $J_j^-,J_j^+\subseteq\mbb{Z}/n\mbb{Z}$ tais que
+    \begin{align*}
+        J_j^- & = \{a_{i+j-k}, \dots, a_{i+j-1}\}\\
+        J_j^+ & = \{a_{i+j}, \dots, a_{i+j+k-1}\}
+    \end{align*}
+    ambos tem tamanho $k$ e, como $n\geq2k$, temos $J_j^-\cap J_j^+=\emptyset$. Logo apenas um deles pode conter $A\in\mathscr{A}$ e, como $2\leq j\leq k$, temos que todo $A\in\mathscr{A}$ que é compatível com $\phi$ é igual a $J_j^-$ ou $J_j^+$ para algum $j$.
+    
+    Em ambos os casos temos que, dada uma permutação cíclica $\phi$, no máximo $k$ membros de $\mathscr{A}$ são compatíveis com $\phi$.
+    
+    Disso, temos que, fixado $\phi$, $|\mc{C}(A,\phi)|\leq k$ e, fixado $A\in\mathscr{A}$, as permutações que são compatíveis com $A$ são $k!(n-k)!$, como elas são cíclicas
+    $$|\mc{C}(A,\phi)|=nk!(n-k)!$$
+    logo
+    $$\sum_{A\in\mathscr{A}}|\mc{C}(A,\phi)|=|\mathscr{A}|nk!(n-k)!\leq\sum_{\phi\in C_n}k=n!k$$
+    ou seja
+    $$|\mathscr{A}|\leq\frac{(n-1)!}{(k-1)!(n-k)!}=\binom{n-1}{k-1}$$
+
+    Se $n>2k$, a igualdade vale somente se, para cada permutação cíclica $\phi$, exatamente $k$ membros de $\mathscr{A}$ sejam compatíveis com $\phi$. Em outras palavras, dada uma ordenação $\phi$ de $\ol{n}$ no círculo, precisamos que $k$ membros de $\mathscr{A}$ sejam intervalos nele ou, utilizando a prova do Lema anterior, que dado um arco $A_1$, para cada um dos $k$ pontos internos de $A_1$, temos um arco que tem esse ponto como ponto de extremidade. Logo \textcolor{red}{Pendente}
+\end{proof}
+
+\cl{purple!15}
+\begin{shaded}
+\textbf{Obs.}
+Se $n=2k$ forme $P=\{\{A,\ol{n}\setminus A\}:A\in\mc{P}(\ol{n})\}$ uma partição de $\mc{P}(\ol{n})$ com $\frac12\binom{n}{k}=\binom{n-1}{k-1}$ elementos, escolha arbitráriamente um elemento de alguma classe de $P$ e reptira o processo para as outras classes de forma que o elemento escolhido intersecte todos os outros já escolhidos anteriormente. Como $2k=n$ e cada classe tem $k$ elementos sempre é possível fazer tal escolha.
+
+Note que, com isso, podemos escolher por exemplo, para $n=4$ e $k=2$, $\mathscr{A}=\{\{1,2\},\{1,3\},\{2,3\}\}$, nesse caso $\mathscr{A}$ não tem nenhum elemento fixo em todos os conjuntos, logo $\mathscr{A}\ncong\mathscr{A}_0$.
+\end{shaded}
+
+\begin{shaded}
+\textbf{Interpretação Alternativa (Bollobás).} Podemos também analisar a prova como um resultado probabilístico: Seja $P$ o conjunto de intervalos cíclicos de $\mbb{Z}/n\mbb{Z}$ de comprimento $k$ e considere $\chi_P$ a função característica de $P$. Defina, para $\mathscr{A}\subseteq\mc{P}(\ol{n})$
+$$\chi_P(\mathscr{A}):=\sum_{A\in\mathscr{A}}\chi_P(A)$$
+i.e., a quantidade de intervalos cíclicos de comprimento $k$ em $\mathscr{A}$. Para $\phi\in S_n$, defina também
+$$\phi(\mathscr{A}):=\{\phi(A):A\in\mathscr{A}\}$$
+como uma família isomórfica a $\mathscr{A}$, i.e., uma renomeação dos elementos de $A\in\mathscr{A}$. Como $\phi(\mathscr{A})$ continua sendo uma família intersectante se $\mathscr{A}$ for, para todo $\phi\in S_n$, então sabemos pelo Lema anterior que $\chi_P(\phi(\mathscr{A}))\leq k$ e, portanto, escolhendo aleatoriamente e uniformemente uma permutação $\phi\in S_n$, temos que $\mbb{E}(\chi_P(\phi(\mathscr{A})))\leq k$. Agora, dado $A\in\mathscr{A}$, sabemos que
+$$\mbb{P}(\chi_P(\phi(A))=1)=\mbb{P}(\phi(A)\in P)=\frac{n}{\binom{n}{k}}$$
+i.e., a probabilidade de $\phi$ mapear $A$ para algum dos $n$ intervalos cíciclos de $P$ de todos os $\binom{n}{k}$ possíveis. Portanto, pela lineariedade de $\mbb{E}$
+\begin{align*}
+    \mbb{E}\rp{\chi_P(\phi(\mathscr{A}))} & = \mbb{E}\rp{\chi_P(\{\phi(A):A\in\mathscr{A}\})}\\
+    & = \mbb{E}\rp{\sum_{A\in\mathscr{A}}\chi_P(\phi(A))}\\
+    & = \sum_{A\in\mathscr{A}}\mbb{E}\rp{\chi_P(\phi(A))}\\
+    & = \sum_{A\in\mathscr{A}}\mbb{P}(\chi_P(\phi(A))=1)\\
+    & = \frac{|\mathscr{A}|\cdot n}{\binom{n}{k}}
+\end{align*}
+\end{shaded}
+
+\subsection{Sistemas $\ell$-intersectantes}
+
+Consideremos agora a generalização com sistemas $\ell$-intersectantes de $k$-subconjuntos de $[\ol{n}]$, i.e., sistemas de conjuntos $\mathscr{A}\subseteq[\ol{n}]^k$ com $|A\cap A'|\geq\ell$, para todo $A,A'\in\mathscr{A}$. Além do Teorema anterior para sistemas $1$-intersectantes, Erdös, Ko e Rado provaram também algo análogo para sistemas $\ell$-intersectantes quando $\ell>1$.
+
+Antes consideremos o caso de um sistema $\ell$-intersectante grande: Seja $L\subseteq\ol{n}$ tal que $|L|=\ell$. O sistema $\ell$-intersectante fixado por $L$ é
+$$\mathscr{A}_L:=\{A\subseteq\ol{n}:|A|=k, L\subseteq A\}$$
+Note que $|\mathscr{A}_L|=\binom{n-\ell}{k-\ell}$. Para $n$ grande o suficiente em relação a $k$, o que foi provado é que os sistemas $\mathscr{A}_L$ fixados são os sistemas $\ell$-intersectantes máximos
+
+\cl{orange!15}
+\begin{shaded}
+\begin{theorem}
+    Para todo $\ell$ e $k$, com $1\leq\ell\leq k$, existe um $n_0=n_0(\ell,k)$ tal que, se $\mathscr{A}\subseteq[\ol{n}]^k$ é um sistema $\ell$-intersectante e $n\geq n_0$, então
+    $$|\mathscr{A}|\leq\binom{n-\ell}{k-\ell}$$
+    Ademais, se vale a igualdade, então $\mathscr{A}$ é um sistema fixado por algum $\ell$-conjunto $L\subseteq\ol{n}$.
+\end{theorem}
+\end{shaded}
+
+\begin{proof}
+    
+\end{proof}
+
+
+
+\end{document}
